@@ -25,7 +25,7 @@ function createDivWithText(text) {
    prepend(document.querySelector('#one'), document.querySelector('#two')) // добавит элемент переданный первым аргументом в начало элемента переданного вторым аргументом
  */
 function prepend(what, where) {
-  where.insertBefore(what, where.firstElementChild); //или через where.prepend(what)
+  where.prepend(what); //или через where.insertBefore(what, where.firstElementChild)
 }
 
 /*
@@ -48,13 +48,14 @@ function prepend(what, where) {
    findAllPSiblings(document.body) // функция должна вернуть массив с элементами div и span т.к. следующим соседом этих элементов является элемент с тегом P
  */
 function findAllPSiblings(where) {
-  const newarr = [];
+  const nextP = [];
 
   for (const el of where.children) {
-    if (el.nextElementSibling && el.nextElementSibling.tagName === 'p') {
-      newarr.push(el);
+    if (el.nextElementSibling && el.nextElementSibling.tagName === 'P') {
+      nextP.push(el);
     }
   }
+  return nextP;
 }
 
 /*
@@ -227,7 +228,6 @@ function collectDOMStat(root) {
  */
 function observeChildNodes(where, fn) {
   //MutationObserver - следит за изменениями в DOM дереве. 2 шага - настройка обзервера и старт отслеживания изменений - observer.observe
-
   const observer = new MutationObserver((mutations) => {
     //первый шаг, настройка обзервера. Принимает параметр mutations и в качестве аргумента туда передаются изменения произошедшие в ДОМ дереве
     mutations.forEach((mutation) => {
@@ -235,9 +235,9 @@ function observeChildNodes(where, fn) {
       if (mutation.type === 'childList') {
         //если изменение с типом chilList то выполняем функцию fn. В этих изменениях есть специальное св-во addNodes/removeNodes (добавление/удаление узлов)
         fn({
-          type: mutation.addNodes.length ? 'insert' : 'remove', //если в addNodes что-то есть - это insert, если нет - remove
+          type: mutation.addedNodes.length ? 'insert' : 'remove', //если в addNodes что-то есть - это insert, если нет - remove
           nodes: [
-            ...(mutation.addNodes.length ? mutation.addNodes : mutation.removeNodes), //определяем из какого эл-та нужно эти изменения достать
+            ...(mutation.addedNodes.length ? mutation.addedNodes : mutation.removedNodes), //определяем из какого эл-та нужно эти изменения достать
           ],
         });
       }
@@ -246,8 +246,8 @@ function observeChildNodes(where, fn) {
   observer.observe(where, {
     //второй шаг, старт отслеживания изменений observer.observe в where, вторым аргументом передаем усолвие в каких случаях будет сигнализироваться что что-то произошло
     childList: true, //childtree = true - регирует на любые изменения в дереве (удаления, добавления),
-    subtree: true,
-  }); //subtree == true - вне зависимости от глубины этих изменений
+    subtree: true, //subtree == true - вне зависимости от глубины этих изменений
+  });
 }
 
 export {
