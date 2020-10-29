@@ -60,7 +60,7 @@ export default class Chat {
     this.ui.loginWindow.hide(); //скрывает див класса с окошком логина
     this.ui.mainWindow.show(); //показывает див класса с основным окном
     this.ui.userName.set(name); //записывает введение в поле логина имя и показывает его в основном окне в поле data-role=user-name
-    this.ui.userPhoto.set(`/photos/${name}.png?t=${Date.now()}`);
+    this.ui.userPhoto.set(`./photos/${name}.png?t=${Date.now()}`);
   }
 
   onMessage({ type, from, data }) {
@@ -85,7 +85,7 @@ export default class Chat {
       );
 
       for (const avatar of avatars) {
-        avatar.style.backgroundImage = `url(/photos/${data.name}.png?t=${Date.now()})`;
+        avatar.style.backgroundImage = `url(./photos/${data.name}.png?t=${Date.now()})`;
       }
     }
   }

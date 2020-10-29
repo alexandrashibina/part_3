@@ -1,10 +1,8 @@
 //обязательно нужен npm install
-const fs = require('fs');
-const path = require('path');
 const http = require('http');
+const fs = require('fs');
 const { Server } = require('ws');
-const wss = new Server({ server });
-const connections = new Map(); //каждй клиент, который подключится к веб-сокет серверу, будет помещен в карту (Map)
+const path = require('path');
 
 function readBody(req) {
   return new Promise((resolve, reject) => {
@@ -20,8 +18,8 @@ const server = http.createServer(async (req, res) => {
   try {
     if (/\/photos\/.+\.png/.test(req.url)) {
       const [, imageName] = req.url.match(/\/photos\/(.+\.png)/) || [];
-      const fallBackPath = path.resolve(__dirname, '../photos/no-photo.png');
-      const filePath = path.resolve(__dirname, '../photos', imageName);
+      const fallBackPath = path.resolve(__dirname, './no-photo.png');
+      const filePath = path.resolve(__dirname, './photos', imageName);
 
       if (fs.existsSync(filePath)) {
         return fs.createReadStream(filePath).pipe(res);
@@ -32,7 +30,7 @@ const server = http.createServer(async (req, res) => {
       const body = await readBody(req);
       const name = body.name.replace(/\.\.\/|\//, '');
       const [, content] = body.image.match(/data:image\/.+?;base64,(.+)/) || [];
-      const filePath = path.resolve(__dirname, '../photos', `${name}.png`);
+      const filePath = path.resolve(__dirname, './photos', `${name}.png`);
 
       if (name && content) {
         fs.writeFileSync(filePath, content, 'base64');
@@ -49,6 +47,9 @@ const server = http.createServer(async (req, res) => {
     res.end('fail');
   }
 });
+
+const wss = new Server({ port: 8080, clientTracking: true });
+const connections = new Map(); //каждй клиент, который подключится к веб-сокет серверу, будет помещен в карту (Map)
 
 wss.on('connection', (socket) => {
   //каждый раз когда кто-то подключается к веб-сокет серверу
@@ -109,4 +110,4 @@ function sendMessageFrom(connections, message, from, excludeSelf) {
   }
 }
 
-server.listen(5050);
+server.listen(8080);
