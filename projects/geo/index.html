@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./main.css">
+    <title>Map</title>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=961dfed4-2e66-46c2-bfaf-65389f669c2e&lang=ru-RU" 
+            type="text/javascript">
+    </script>
+</head>
+<body>
+    <div class="wrapper">
+        <div id="map" style="width: 100vw; height: 400vh;">
+        </div>
+    </div>
+    <script type="template" id="addFormTemplate">
+        <div class="block">
+            <div class="review-list"></div>
+            <div class="form-title">
+                <h3>ВАШ ОТЗЫВ</h3>
+            </div>
+            <div class="form" data-role="review-form">
+                <div class="field">
+                    <input data-role="review-name" type="text" placeholder="Ваше имя">
+                </div>
+                <div class="field">
+                    <input data-role="review-place" type="text" placeholder="Укажите место">
+                </div>
+                <div class="field">
+                    <textarea data-role="review-text" placeholder="Поделитесь впечатлениями" rows="5"></textarea>
+                </div>
+    
+                <button id="upload" data-role="review-add">Добавить</button>
+                <span class="form-error"></span>
+            </div>
+        </div>
+    </script>
+    <script src="./main.js"></script>
+</body>
+</html>
