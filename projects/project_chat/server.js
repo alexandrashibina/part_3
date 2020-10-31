@@ -14,7 +14,7 @@ function readBody(req) {
   });
 }
 
-const server = http.createServer(async (req, res) => {
+http.createServer(async (req, res) => {
   try {
     if (/\/photos\/.+\.png/.test(req.url)) {
       const [, imageName] = req.url.match(/\/photos\/(.+\.png)/) || [];
@@ -109,5 +109,3 @@ function sendMessageFrom(connections, message, from, excludeSelf) {
     connection.send(JSON.stringify(message));
   }
 }
-
-server.listen(8080);
