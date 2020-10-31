@@ -9,6 +9,10 @@ html, body, #map {
     overflow: hidden;
 }
 
+#map {
+    position: relative;
+}
+
 h3 {
     font-weight: 500;
     font-size: 16px;
@@ -67,9 +71,16 @@ textarea:focus, input:focus, button:focus{
     color: red;
 }
 
-.form .review-list {
-    max-height: 500px;
+form .review-list {
     overflow: scroll;
+}
+
+.block {
+    padding: 20px;
+}
+
+.hidden {
+    display: none;
 }
 
 .ymaps-2-1-77-balloon {

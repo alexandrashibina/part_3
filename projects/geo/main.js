@@ -7,29 +7,32 @@ class GeoReview {
   }
 
   async onInit() {
-    const coords = await this.callApi('coords');
-
+    const coords = await this.getCoords();
     for (const item of coords) {
       for (let i = 0; i < item.total; i++) {
         this.map.createPlacemark(item.coords);
       }
-    }
+    }      
     document.body.addEventListener('click', this.onDocumentClick.bind(this));
   }
+    
+  getCoords() {
+    const coords = [];
 
-  async callApi(method, body = {}) {
-    const res = await fetch(`${method}`, {
-      method: 'post',
-      body: JSON.stringify(body),
-    });
-    return await res.json();
+    for (const item in this.data) {
+      coords.push({
+        coords: item.split('_')
+      });
+    }
+
+    return coords;
   }
 
   createForm(coords, reviews) {
     const root = document.createElement('div');
     root.innerHTML = this.formTemplate;
-    const reviewList = root.querySelector('.review-list');
-    const reviewForm = root.querySelector('[data-role=review-form]');
+    const reviewList = document.querySelector('.review-list');
+    const reviewForm = document.querySelector('[data-role=review-form]');
     reviewForm.dataset.coords = JSON.stringify(coords);
 
     for (const item of reviews) {
@@ -38,39 +41,52 @@ class GeoReview {
       div.innerHTML = `<div><b>${item.name}</b>[${item.place}]</div><div>${item.text}</div>`;
       reviewList.appendChild(div);
     }
-
     return root;
   }
 
   async onClick(coords) {
-    this.map.openBalloon(coords, 'Загрузка...'); //another code
-    const list = await this.callApi('list', { coords });
-    const form = this.createForm(coords, list);
+    this.map.openBalloon(coords, this.formTemplate);
+    const data = {
+      coords,
+      review: {
+        name: "",
+        place: "",
+        text: "",
+      }
+    };
+    const form = this.createForm(coords, data);
     this.map.setBalloonContent(form.innerHTML);
   }
 
   async onDocumentClick(e) {
     if (e.target.dataset.role === 'review-add') {
-      const reviewForm = document.querySelector('[data-role=review-form]');
-      const coords = JSON.parse(reviewForm.dataset.coords);
-      const data = {
-        coords,
-        review: {
-          name: document.querySelector('[data-role=review-name]').value,
-          place: document.querySelector('[data-role=review-place]').value,
-          text: document.querySelector('[data-role=review-text]').value,
-        },
-      };
+      const name = document.querySelector('[data-role=review-name]');
+      const place = document.querySelector('[data-role=review-place]');
+      const text = document.querySelector('[data-role=review-text]');
+      
+      const storage = localStorage;
+      
+      storage.data = JSON.stringify({
+        name: name.value,
+        place: place.value,
+        text: text.value
+      })
 
-      try {
-        await this.callApi('add', data);
-        this.map.createPlacemark(coords);
-        this.map.closeBalloon();
-      } catch (e) {
-        const formError = document.querySelector('.form-error');
-        formError.innerText = e.message;
-      }
-    }
+      this.map.createPlacemark(coords);
+      this.map.closeBalloon();
+    };
+      
+    // const reviewForm = document.querySelector('[data-role=review-form]');
+    // const coords = JSON.parse(reviewForm.dataset.coords);
+    // const data = {
+    //   coords,
+    //   review: {
+    //     name: document.querySelector('[data-role=review-name]').value,
+    //     place: document.querySelector('[data-role=review-place]').value,
+    //     text: document.querySelector('[data-role=review-text]').value,
+    //   },
+    // };
+    
   }
 }
 
@@ -84,7 +100,7 @@ class InteractiveMap {
     await this.loadYMaps();
     this.initMap();
   }
-
+  
   loadYMaps() {
     return new Promise((resolve) => ymaps.ready(resolve));
   }
